@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { LockKeyhole, Mail, UserPlus } from 'lucide-react';
 import { createClient } from '../../lib/supabase/client';
 
+const productionOrigin = 'https://teaohou.vercel.app';
+
 export default function LoginPage() {
   const router = useRouter();
   const [mode, setMode] = useState<'signin'|'signup'>('signin');
@@ -20,15 +22,20 @@ export default function LoginPage() {
     setLoading(true);
     setMessage('');
     const supabase = createClient();
+
     if (mode === 'signup') {
+      const redirectOrigin = window.location.hostname === 'localhost' ? window.location.origin : productionOrigin;
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { full_name: name } },
+        options: {
+          data: { full_name: name },
+          emailRedirectTo: `${redirectOrigin}/auth/callback`,
+        },
       });
       if (error) setMessage(error.message);
       else if (data.session) { router.push('/workspace'); router.refresh(); }
-      else setMessage('Account created. Check your email if confirmation is required, then sign in.');
+      else setMessage('Account created. Check your email and use the confirmation link to finish signing in.');
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setMessage(error.message);
