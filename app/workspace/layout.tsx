@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { LayoutDashboard, LandPlot, Compass, Users, HeartHandshake, House, FileText, FolderOpen, BriefcaseBusiness, ShieldCheck, LogOut } from 'lucide-react';
+import { LayoutDashboard, LandPlot, Compass, Users, HeartHandshake, House, FileText, FolderOpen, BriefcaseBusiness, ShieldCheck, LogOut, CalendarDays, MessageSquare } from 'lucide-react';
 import { createClient } from '../../lib/supabase/server';
 import { signOut } from './actions';
 
@@ -15,6 +15,8 @@ const links=[
   {href:'/workspace/housing',label:'Housing & development',icon:House},
   {href:'/workspace/applications',label:'Applications',icon:FileText},
   {href:'/workspace/documents',label:'My documents',icon:FolderOpen},
+  {href:'/workspace/appointments',label:'Appointments',icon:CalendarDays},
+  {href:'/workspace/messages',label:'Messages',icon:MessageSquare},
   {href:'/workspace/operations',label:'Operations',icon:BriefcaseBusiness},
 ];
 
@@ -24,8 +26,9 @@ export default async function WorkspaceLayout({children}:{children:React.ReactNo
   const claims = claimsData?.claims;
   if (!claims?.sub) redirect('/login');
 
-  const { data: profile } = await supabase.from('teaohou_profiles').select('display_name').eq('user_id',claims.sub).maybeSingle();
+  const { data: profile } = await supabase.from('teaohou_profiles').select('display_name,role').eq('user_id',claims.sub).maybeSingle();
   const displayName = profile?.display_name || String(claims.email || 'Whānau member');
+  const roleLabel = String(profile?.role || 'whanau').replaceAll('_',' ');
 
   return <div className="workspace">
     <aside className="sidebar">
@@ -33,7 +36,8 @@ export default async function WorkspaceLayout({children}:{children:React.ReactNo
       <nav><span className="sidebar-label">YOUR WORKSPACE</span>{links.map(l=><Link href={l.href} key={l.href}><l.icon size={18}/>{l.label}</Link>)}</nav>
       <div className="sidebar-bottom">
         <ShieldCheck size={19}/><p>Secure workspace · Authenticated session</p>
-        <small style={{display:'block',marginBottom:12,overflowWrap:'anywhere'}}>{displayName}</small>
+        <small style={{display:'block',marginBottom:4,overflowWrap:'anywhere'}}>{displayName}</small>
+        <small style={{display:'block',marginBottom:12,textTransform:'capitalize'}}>{roleLabel}</small>
         <form action={signOut}><button type="submit" style={{display:'inline-flex',alignItems:'center',gap:7,border:0,background:'transparent',padding:0,color:'#4a236f',fontWeight:700,fontSize:11}}><LogOut size={14}/> Sign out</button></form>
         <Link href="/" style={{display:'block',marginTop:12}}>← Back to website</Link>
       </div>
