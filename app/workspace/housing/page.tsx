@@ -1,37 +1,21 @@
-import { House, Scale, MapPinned, Building2, WalletCards } from 'lucide-react';
-import PathwayWorkspace from '../_components/PathwayWorkspace';
+import Link from 'next/link';
+import { House, Scale, MapPinned, Building2, WalletCards, HardHat, ArrowRight, AlertTriangle } from 'lucide-react';
+import styles from '../tools.module.css';
 
-export default function HousingPage(){
-  return <PathwayWorkspace
-    eyebrow="HOUSING & DEVELOPMENT"
-    title="Housing & development"
-    subtitle="A place to call home"
-    description="Turn a housing goal into a staged whenua-development pathway covering authority, site feasibility, council requirements, funding and construction readiness."
-    summary="The sequence matters. Confirm the legal right to use the whenua and whether the site can support the proposed development before spending heavily on plans or construction."
-    icon={House}
-    goals={[
-      {title:'Confirm authority to build',description:'Understand who owns or administers the whenua and what authority is required to occupy or develop it.',icon:Scale},
-      {title:'Check the site',description:'Review access, services, wastewater, water, power, natural hazards and practical constraints.',icon:MapPinned},
-      {title:'Understand consents',description:'Identify district plan, resource consent and building consent requirements with the relevant council.',icon:Building2},
-      {title:'Prepare for funding',description:'Organise ownership, authority, valuation, plans, costs and borrower information before seeking finance.',icon:WalletCards}
-    ]}
-    stages={[
-      {title:'Confirm land interests and authority',description:'Begin with the legal status of the whenua and the authority to occupy, licence, lease or otherwise develop.',tags:['Authority'],checks:['Confirm block and ownership','Identify trustees or administrators','Identify occupation, licence or lease requirements']},
-      {title:'Complete early site feasibility',description:'Establish whether access, services and physical conditions support the intended build.',tags:['Site'],checks:['Legal and physical access','Water and wastewater options','Power and telecommunications','Flood, slope and other hazard checks']},
-      {title:'Define the development concept',description:'Set the number of homes, intended occupants, approximate footprint, servicing approach and staged budget.',tags:['Concept'],checks:['Define who will live there','Set indicative build scope','Identify professionals needed']},
-      {title:'Confirm planning and consent pathway',description:'Check the relevant local authority requirements for the specific site and development.',tags:['Council'],checks:['District plan or zoning review','Resource consent assessment','Building consent requirements','Engineering or specialist reports if required']},
-      {title:'Build a finance-ready pack',description:'Bring together authority, site information, plans, budget, valuation and borrower information for the funding pathway.',tags:['Funding'],checks:['Project budget','Evidence of authority','Plans and specifications','Borrower affordability and deposit information where applicable']},
-      {title:'Procure and build',description:'Only after legal, consent and funding gates are satisfied should the project move into contracted construction and completion.',tags:['Delivery'],checks:['Signed contracts','Approved consents','Confirmed funding','Insurance and completion documentation']}
-    ]}
-    prepare={['Land block and ownership record','Existing occupation, licence or lease orders','Site address or map reference','Known access and utility information','Approximate build goal and household','Indicative budget']}
-    decisions={['Who has authority to approve occupation or development?','Is separate title or security required by a lender?','Can the site be serviced?','What council approvals apply?','Is the project financially feasible?']}
-    resources={[
-      {label:'Start with your whenua record',href:'/workspace/whenua'},
-      {label:'Te Ao Hou resource library',href:'/resources'},
-      {label:'Upload site and funding documents',href:'/workspace/documents'}
-    ]}
-    warning="Planning, building, engineering and lending requirements depend on the particular whenua, council, ownership structure and funding provider. Record verified requirements for the specific case rather than assuming one national pathway."
-    nextHref="/workspace/applications"
-    nextLabel="Prepare development case"
-  />;
-}
+const stages=[
+  ['01','Authority first','Confirm ownership and the legal basis to occupy or develop the whenua.','Ownership · trustees · occupation / licence / lease'],
+  ['02','Check the site','Test access, water, wastewater, power, hazards and physical constraints.','Access · services · hazards · topography'],
+  ['03','Shape the project','Define who will live there, how many homes, scope, professionals and indicative budget.','Household · concept · scope · budget'],
+  ['04','Confirm the consent pathway','Check district plan, resource consent, building consent and technical reports.','Planning · council · engineering'],
+  ['05','Build the finance pack','Bring authority, plans, valuation, costs and borrower information together.','Security · valuation · budget · affordability'],
+  ['06','Contract and build','Only proceed once authority, consents and funding gates are satisfied.','Contracts · insurance · construction · completion']
+];
+
+export default function HousingPage(){return <main className={styles.page}>
+  <section className={styles.hero}><div className={styles.heroMain}><span className={styles.eyebrow}>HOUSING & DEVELOPMENT</span><h1>Turn a housing goal into a buildable whenua project</h1><p>The sequence matters. Confirm authority and site feasibility before spending heavily on plans, consents or construction.</p><div className={styles.quickActions}><Link href="/workspace/whenua">Confirm whenua</Link><Link href="/workspace/documents">Upload site documents</Link></div></div><aside className={styles.heroAside}><div className={styles.metric}><span>Readiness gates</span><strong>6</strong></div><div className={styles.metric}><span>Start with</span><strong style={{fontSize:16}}>Authority</strong></div><div className={styles.metric}><span>Before build</span><strong style={{fontSize:16}}>Consents + funding</strong></div></aside></section>
+  <div className={styles.toolbar}><div><h2>Development readiness</h2><p>These four areas determine whether the project can move forward.</p></div></div>
+  <div className={styles.pipeline}><div className={styles.pipeCard}><Scale size={19}/><b style={{fontSize:14,marginTop:9}}>Authority</b><span>Who owns or administers the whenua, and what permission is required?</span></div><div className={styles.pipeCard}><MapPinned size={19}/><b style={{fontSize:14,marginTop:9}}>Site</b><span>Can the site be accessed and serviced safely?</span></div><div className={styles.pipeCard}><Building2 size={19}/><b style={{fontSize:14,marginTop:9}}>Consents</b><span>What planning, building and technical approvals apply?</span></div><div className={styles.pipeCard}><WalletCards size={19}/><b style={{fontSize:14,marginTop:9}}>Funding</b><span>Is the project finance-ready with evidence and costs?</span></div></div>
+  <div className={styles.toolbar}><div><h2>From whenua to construction</h2><p>A practical sequence that prevents expensive work being done too early.</p></div></div>
+  <div className={styles.grid2}><section className={styles.panel}><div className={styles.recordList}>{stages.map(([n,t,d,m])=><article key={n} className={styles.record}><div style={{display:'flex',gap:12}}><span className={styles.status}>{n}</span><div><strong>{t}</strong><p>{d}</p><p style={{color:'#4a236f',fontWeight:700}}>{m}</p></div></div></article>)}</div></section><aside className={styles.panel}><div className={styles.panelTitle}><span><HardHat size={18}/></span><h3>Project pack</h3></div><div className={styles.recordList}>{['Land block and ownership record','Occupation, licence or lease authority','Site address or map reference','Access and utility information','Household and build goal','Indicative budget and funding position'].map(x=><div className={styles.record} key={x}><strong>{x}</strong></div>)}</div><div className={styles.notice} style={{marginTop:16}}><AlertTriangle size={16}/>Council, engineering and lender requirements depend on the particular whenua and project. Record verified requirements for the actual case rather than assuming one national pathway.</div></aside></div>
+  <div className={styles.toolbar}><div><h2>Ready to organise the formal work?</h2><p>Use Applications for Court-related authority and keep site, consent and funding evidence in Documents.</p></div></div><div style={{display:'flex',gap:10,flexWrap:'wrap'}}><Link href="/workspace/applications" className={styles.primary}>Open applications <ArrowRight size={14}/></Link><Link href="/workspace/documents" className={styles.primary} style={{background:'#7851a9'}}>Open project documents <ArrowRight size={14}/></Link></div>
+</main>}
