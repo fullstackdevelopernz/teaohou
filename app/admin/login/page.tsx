@@ -17,22 +17,38 @@ export default function AdminLoginPage(){
   const [loading,setLoading]=useState(false);
 
   async function submit(e:FormEvent){
-    e.preventDefault();setLoading(true);setMessage('');
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
     const supabase=createClient();
-    const {data,error}=await supabase.auth.signInWithPassword({email,password});
-    if(error){setMessage(error.message);setLoading(false);return;}
+    const {data,error}=await supabase.auth.signInWithPassword({email:email.trim(),password});
+    if(error){setMessage('Email or password is incorrect, or this account is not authorised for administration.');setLoading(false);return;}
     const userId=data.user?.id;
     const {data:profile}=await supabase.from('teaohou_profiles').select('role').eq('user_id',userId).maybeSingle();
     if(!staffRoles.includes(profile?.role||'')){
       await supabase.auth.signOut();
       setMessage('This login is restricted to authorised Te Ao Hou staff.');
-      setLoading(false);return;
+      setLoading(false);
+      return;
     }
-    router.push('/admin');router.refresh();
+    router.push('/admin');
+    router.refresh();
   }
 
   return <main className={styles.loginShell}>
     <section className={styles.loginBrand}><div><img src="/te-ao-hou-symbol.svg" alt="Te Ao Hou"/><h1>Te Ao Hou Administration</h1><p>A separate operational environment for case intake, assignment, tasks, applications, evidence, appointments and whānau communications.</p></div><small>Staff access only · Te Ao Hou</small></section>
-    <section className={styles.loginPanel}><Link href="/" style={{fontSize:10,fontWeight:800,color:'#4a236f'}}>← Back to Te Ao Hou</Link><span style={{fontSize:9,fontWeight:800,letterSpacing:'.14em',color:'#7851a9',marginTop:28}}>ADMIN ACCESS</span><h2>Staff sign in</h2><p>Use your authorised Te Ao Hou administration account.</p><form onSubmit={submit} className={styles.form}><label>Email<input required type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)}/></label><label>Password<input required minLength={8} type="password" autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)}/></label>{message&&<div className={styles.error}>{message}</div>}<button type="submit" className={styles.button} disabled={loading}><LockKeyhole size={14} style={{verticalAlign:'middle',marginRight:7}}/>{loading?'Checking access…':'Sign in to administration'}</button></form><p style={{marginTop:22,display:'flex',gap:8,alignItems:'flex-start'}}><ShieldCheck size={15}/>Access is role-restricted. A normal whānau account cannot enter the admin workspace.</p></section>
+    <section className={styles.loginPanel}>
+      <Link href="/" style={{fontSize:10,fontWeight:800,color:'#4a236f'}}>← Back to Te Ao Hou</Link>
+      <span style={{fontSize:9,fontWeight:800,letterSpacing:'.14em',color:'#7851a9',marginTop:28}}>ADMIN ACCESS</span>
+      <h2>Staff sign in</h2>
+      <p>Use your own authorised Te Ao Hou administration account. Login details are never stored in this page.</p>
+      <form onSubmit={submit} className={styles.form} autoComplete="off">
+        <label>Email<input required name="teaohou_admin_email" type="email" inputMode="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} autoComplete="off" value={email} onChange={e=>setEmail(e.target.value)} data-lpignore="true" data-1p-ignore="true"/></label>
+        <label>Password<input required name="teaohou_admin_password" minLength={8} type="password" autoComplete="new-password" value={password} onChange={e=>setPassword(e.target.value)} data-lpignore="true" data-1p-ignore="true"/></label>
+        {message&&<div className={styles.error}>{message}</div>}
+        <button type="submit" className={styles.button} disabled={loading}><LockKeyhole size={14} style={{verticalAlign:'middle',marginRight:7}}/>{loading?'Checking access…':'Sign in to administration'}</button>
+      </form>
+      <p style={{marginTop:22,display:'flex',gap:8,alignItems:'flex-start'}}><ShieldCheck size={15}/>Access is role-restricted. A normal whānau account cannot enter the admin workspace.</p>
+    </section>
   </main>
 }
