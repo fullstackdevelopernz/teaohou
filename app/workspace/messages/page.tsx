@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ArrowRight, CalendarDays, FileText, MessageSquarePlus, MessagesSquare, BriefcaseBusiness, Clock3 } from 'lucide-react';
 import { createClient } from '../../../lib/supabase/server';
 import { sendMessage } from '../operations/actions';
-import styles from '../tools.module.css';
+import styles from './messages.module.css';
 
 type SearchParams = Promise<{ case?: string }>;
 
