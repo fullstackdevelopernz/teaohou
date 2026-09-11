@@ -38,7 +38,7 @@ export default async function WorkspaceLayout({children}:{children:React.ReactNo
       </div>
     </aside>
     <div className="workspace-main">
-      <header className="workspace-header"><Link href="/" className="brand"><img src="/te-ao-hou-symbol.svg" alt="" style={{width:32,height:32,objectFit:'contain'}}/><strong>TE AO HOU</strong></Link><span>Secure whānau workspace</span></header>
+      <header className="workspace-header"><span>Secure whānau workspace</span></header>
       <nav className="mobile-menu">{links.map(l=><Link href={l.href} key={l.href}>{l.label}</Link>)}</nav>
       {children}
     </div>
