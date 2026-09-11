@@ -1,37 +1,21 @@
-import { Users, Search, FolderOpen, ClipboardCheck } from 'lucide-react';
-import PathwayWorkspace from '../_components/PathwayWorkspace';
+import Link from 'next/link';
+import { Users, UserRoundSearch, Network, FolderCheck, ClipboardCheck, Gavel, ArrowRight, AlertTriangle } from 'lucide-react';
+import styles from '../tools.module.css';
 
-export default function SuccessionPage(){
-  return <PathwayWorkspace
-    eyebrow="SUCCESSION PATHWAY"
-    title="Succession"
-    subtitle="Your connection through generations"
-    description="Work through the practical steps involved when Māori land interests need to pass from a deceased owner to the people entitled to succeed."
-    summary="Succession is about confirming the deceased owner, the affected interests, the whakapapa, the rightful successors and the evidence needed before a Court application is ready."
-    icon={Users}
-    goals={[
-      {title:'Identify the deceased owner',description:'Confirm the person, their land interests and whether previous succession has already occurred.',icon:Search},
-      {title:'Build the whakapapa record',description:'Record the family line and all people who may be entitled to succeed.',icon:Users},
-      {title:'Prepare the evidence pack',description:'Gather death, will, whakapapa, whāngai, partner and trust material where relevant.',icon:FolderOpen},
-      {title:'Prepare for application',description:'Match the circumstances to the current official succession process before submission.',icon:ClipboardCheck}
-    ]}
-    stages={[
-      {title:'Confirm the deceased owner and interests',description:'Establish which owner has died and which Māori land interests are affected.',tags:['Owner','Interests'],checks:['Confirm full legal name and aliases','Find relevant land blocks','Check whether any interests were already succeeded']},
-      {title:'Identify all rightful successors',description:'Build the whakapapa carefully so the application does not omit people who may be entitled.',tags:['Whakapapa'],checks:['Record children and descendants','Record relevant whāngai circumstances','Check whether a surviving partner may have rights']},
-      {title:'Collect supporting evidence',description:'Gather the current official evidence required for the circumstances of the succession.',tags:['Evidence'],checks:['Death certificate','Will if one exists','Whakapapa and family contact information','Partner, whāngai or trust documents where relevant']},
-      {title:'Decide how interests should be held',description:'Consider whether successors will take interests directly or whether a trust application is also proposed.',tags:['Decision'],checks:['Discuss options with affected people','Record trustee consents if relevant','Prepare hui minutes where needed']},
-      {title:'Prepare and submit the application',description:'Use current Māori Land Court guidance and an accepted submission channel.',tags:['Application'],checks:['Use the current process','Check all supporting documents','Keep a complete submitted copy']},
-      {title:'Track hearing, decision and post-order work',description:'Respond to Court requests, attend any required hearing and retain final orders.',tags:['Court','Completion'],checks:['Track correspondence','Record hearing dates','Store final orders and update whānau records']}
-    ]}
-    prepare={['Deceased owner’s full name','Death certificate','Will, if one exists','Whakapapa showing possible successors','Known Māori land interests','Relevant trust or whāngai information']}
-    decisions={['Has succession already been completed for some interests?','Who are all rightful successors?','Does a surviving partner hold relevant rights?','Are whāngai circumstances involved?','Should a whānau trust be considered?']}
-    resources={[
-      {label:'Māori Land Court — succession',href:'https://www.xn--morilandcourt-wqb.govt.nz/en/maori-land/becoming-a-landowner/succession'},
-      {label:'Māori Land Court — application guides',href:'https://www.xn--morilandcourt-wqb.govt.nz/en/our-application-process/application-guides'},
-      {label:'Understand your whenua first',href:'/workspace/whenua'}
-    ]}
-    warning="Contested whakapapa, wills, competing claims, capacity issues or complex estates should be escalated for qualified legal advice. Te Ao Hou supports preparation and case management; it does not make legal determinations."
-    nextHref="/workspace/applications"
-    nextLabel="Prepare application"
-  />;
-}
+const stages=[
+  ['01','Confirm the deceased owner','Identify the person, aliases and the Māori land interests affected.','Full legal name · land blocks · prior succession'],
+  ['02','Build the whakapapa picture','Map children, descendants, whāngai circumstances and relevant partner rights.','Whakapapa · whānau contacts · entitlement questions'],
+  ['03','Gather the evidence','Collect the documents that support the succession pathway.','Death certificate · will · whakapapa · trust material'],
+  ['04','Decide how interests may be held','Work through direct succession or whether a trust option is also being considered.','Whānau discussion · consents · hui record'],
+  ['05','Prepare the application','Match the facts to the current Māori Land Court process and current guidance.','Current process · complete evidence · submitted copy'],
+  ['06','Track the Court process','Keep requests, hearing dates, decisions and final orders together.','Correspondence · hearing · final orders']
+];
+
+export default function SuccessionPage(){return <main className={styles.page}>
+  <section className={styles.hero}><div className={styles.heroMain}><span className={styles.eyebrow}>SUCCESSION PATHWAY</span><h1>Move Māori land interests through the generations with a clear record</h1><p>Succession starts with the deceased owner and the whakapapa. The goal is to understand who may be entitled, what evidence is needed and what must be ready before an application is filed.</p><div className={styles.quickActions}><Link href="/workspace/whenua">Check the whenua first</Link><Link href="/workspace/documents">Build the evidence pack</Link></div></div><aside className={styles.heroAside}><div className={styles.metric}><span>Core stages</span><strong>6</strong></div><div className={styles.metric}><span>Start with</span><strong style={{fontSize:16}}>Owner + whakapapa</strong></div><div className={styles.metric}><span>Finish with</span><strong style={{fontSize:16}}>Final orders</strong></div></aside></section>
+  <div className={styles.toolbar}><div><h2>What you are actually working through</h2><p>Four workstreams need to come together before the matter is application-ready.</p></div></div>
+  <div className={styles.pipeline}><div className={styles.pipeCard}><UserRoundSearch size={19}/><b style={{fontSize:14,marginTop:9}}>Deceased owner</b><span>Confirm the person and affected interests.</span></div><div className={styles.pipeCard}><Network size={19}/><b style={{fontSize:14,marginTop:9}}>Whakapapa</b><span>Identify everyone who may need to be considered.</span></div><div className={styles.pipeCard}><FolderCheck size={19}/><b style={{fontSize:14,marginTop:9}}>Evidence</b><span>Build the supporting record before filing.</span></div><div className={styles.pipeCard}><ClipboardCheck size={19}/><b style={{fontSize:14,marginTop:9}}>Application</b><span>Use the current official Court pathway.</span></div></div>
+  <div className={styles.toolbar}><div><h2>The succession journey</h2><p>Work down the pathway in order. Do not jump to filing before the people and evidence are clear.</p></div></div>
+  <div className={styles.grid2}><section className={styles.panel}><div className={styles.recordList}>{stages.map(([n,t,d,m])=><article key={n} className={styles.record}><div className={styles.recordTop}><div style={{display:'flex',gap:12}}><span className={styles.status}>{n}</span><div><strong>{t}</strong><p>{d}</p><p style={{color:'#4a236f',fontWeight:700}}>{m}</p></div></div></div></article>)}</div></section><aside className={styles.panel}><div className={styles.panelTitle}><span><FolderCheck size={18}/></span><h3>Have these ready</h3></div><div className={styles.recordList}>{['Deceased owner’s full name','Death certificate','Will, if one exists','Whakapapa showing possible successors','Known Māori land interests','Relevant trust or whāngai information'].map(x=><div className={styles.record} key={x}><strong>{x}</strong></div>)}</div><div className={styles.notice} style={{marginTop:16}}><AlertTriangle size={16}/>Contested whakapapa, competing claims, wills or complex estates should be escalated for qualified legal advice.</div></aside></div>
+  <div className={styles.toolbar}><div><h2>Ready for the next step?</h2><p>Once the owner, whakapapa and evidence are clear, create or update the application record.</p></div></div><Link href="/workspace/applications" className={styles.primary}>Prepare succession application <ArrowRight size={14}/></Link>
+</main>}
