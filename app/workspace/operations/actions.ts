@@ -17,6 +17,11 @@ function clean(value: FormDataEntryValue | null) {
   return String(value ?? '').trim();
 }
 
+function revalidateAppointment(caseId?: string) {
+  revalidatePath('/workspace/appointments');
+  if (caseId) revalidatePath(`/workspace/cases/${caseId}`);
+}
+
 export async function createApplication(formData: FormData) {
   const { supabase, userId } = await userContext();
   const caseId = clean(formData.get('case_id'));
@@ -40,21 +45,67 @@ export async function createAppointment(formData: FormData) {
   const caseId = clean(formData.get('case_id'));
   const title = clean(formData.get('title'));
   const startsAt = clean(formData.get('starts_at'));
+  const endsAt = clean(formData.get('ends_at'));
   const location = clean(formData.get('location'));
   const notes = clean(formData.get('notes'));
   if (!caseId || !title || !startsAt) return;
+
+  const start = new Date(startsAt);
+  const end = endsAt ? new Date(endsAt) : null;
+  if (Number.isNaN(start.getTime())) throw new Error('A valid appointment start time is required.');
+  if (end && (Number.isNaN(end.getTime()) || end.getTime() < start.getTime())) throw new Error('The end time must be after the start time.');
+
   const { error } = await supabase.from('teaohou_appointments').insert({
     case_id: caseId,
     owner_id: userId,
     title,
-    starts_at: new Date(startsAt).toISOString(),
+    starts_at: start.toISOString(),
+    ends_at: end?.toISOString() || null,
     location: location || null,
     notes: notes || null,
     status: 'scheduled',
   });
   if (error) throw new Error(error.message);
-  revalidatePath('/workspace/appointments');
-  revalidatePath(`/workspace/cases/${caseId}`);
+  revalidateAppointment(caseId);
+}
+
+export async function updateAppointment(formData: FormData) {
+  const { supabase, userId } = await userContext();
+  const appointmentId = clean(formData.get('appointment_id'));
+  const caseId = clean(formData.get('case_id'));
+  const title = clean(formData.get('title'));
+  const startsAt = clean(formData.get('starts_at'));
+  const endsAt = clean(formData.get('ends_at'));
+  const location = clean(formData.get('location'));
+  const notes = clean(formData.get('notes'));
+  if (!appointmentId || !title || !startsAt) return;
+
+  const start = new Date(startsAt);
+  const end = endsAt ? new Date(endsAt) : null;
+  if (Number.isNaN(start.getTime())) throw new Error('A valid appointment start time is required.');
+  if (end && (Number.isNaN(end.getTime()) || end.getTime() < start.getTime())) throw new Error('The end time must be after the start time.');
+
+  const { error } = await supabase.from('teaohou_appointments').update({
+    title,
+    starts_at: start.toISOString(),
+    ends_at: end?.toISOString() || null,
+    location: location || null,
+    notes: notes || null,
+    updated_at: new Date().toISOString(),
+  }).eq('id', appointmentId).eq('owner_id', userId);
+  if (error) throw new Error(error.message);
+  revalidateAppointment(caseId);
+}
+
+export async function updateAppointmentStatus(formData: FormData) {
+  const { supabase, userId } = await userContext();
+  const appointmentId = clean(formData.get('appointment_id'));
+  const caseId = clean(formData.get('case_id'));
+  const status = clean(formData.get('status'));
+  if (!appointmentId || !['scheduled','completed','cancelled'].includes(status)) return;
+  const { error } = await supabase.from('teaohou_appointments').update({status,updated_at:new Date().toISOString()}).eq('id',appointmentId).eq('owner_id',userId);
+  if (error) throw new Error(error.message);
+  revalidateAppointment(caseId);
 }
 
 export async function sendMessage(formData: FormData) {
