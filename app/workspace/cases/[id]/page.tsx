@@ -6,8 +6,9 @@ import { addWhenua, createDefaultPlan } from '../../actions';
 
 export const dynamic = 'force-dynamic';
 
-export default async function CasePage({params}:{params:Promise<{id:string}>}){
+export default async function CasePage({params,searchParams}:{params:Promise<{id:string}>,searchParams:Promise<{created?:string}>}){
   const { id } = await params;
+  const query=await searchParams;
   const supabase = await createClient();
   const { data: claimsData } = await supabase.auth.getClaims();
   if (!claimsData?.claims?.sub) redirect('/login');
@@ -31,12 +32,15 @@ export default async function CasePage({params}:{params:Promise<{id:string}>}){
   const appointments = appointmentsResult.data ?? [];
   const messages = messagesResult.data ?? [];
 
-  const pathwayHref = caseRow.case_type === 'succession' ? '/workspace/succession' : caseRow.case_type === 'trust' ? '/workspace/trusts' : caseRow.case_type === 'housing' ? '/workspace/housing' : caseRow.case_type === 'whenua' ? '/workspace/whenua' : '/workspace/applications';
+  const guidanceByType:Record<string,string>={succession:'/workspace/succession',trust:'/workspace/trusts',housing:'/workspace/housing',whenua:'/workspace/whenua',application:'/workspace/applications'};
+  const pathwayHref = guidanceByType[String(caseRow.case_type)] ?? '/workspace/plan';
+  const caseTypeLabel=String(caseRow.case_type).replaceAll('_',' ');
 
   return <div className="workspace-content">
-    <span className="eyebrow">CASE / {String(caseRow.case_type).toUpperCase()}</span>
+    <span className="eyebrow">CASE / {caseTypeLabel.toUpperCase()}</span>
     <h1 className="workspace-title">{caseRow.title}</h1>
     <p className="workspace-lead">{caseRow.summary || 'Build the whenua record, pathway and evidence for this matter.'}</p>
+    {query.created==='1'&&<div className="notice" style={{marginBottom:12}}><ShieldCheck size={17}/> Case created. Your working pathway has been started and this is now the permanent record for the matter.</div>}
     <div className="notice"><ShieldCheck size={17}/> This case is loaded through authenticated row-level access. Only authorised participants and Te Ao Hou staff with the appropriate role can access it.</div>
 
     <div className="workspace-grid" style={{marginTop:28}}>
@@ -64,8 +68,8 @@ export default async function CasePage({params}:{params:Promise<{id:string}>}){
       </section>
 
       <section className="panel">
-        <span className="eyebrow">MY WHENUA PLAN</span><h2 style={{fontSize:20,margin:'9px 0'}}>Create the case pathway</h2>
-        {plans.length ? <div><p>A plan is already linked to this case.</p>{plans.map(p=><div key={p.id} style={{borderTop:'1px solid #e5dfec',padding:'12px 0'}}><strong>{p.goal_title}</strong><small style={{display:'block',marginTop:5,color:'#625d6b'}}>Stage {p.current_stage} · {p.status}</small></div>)}</div> : <><p>Generate a staged plan from the case type. It can then be refined as ownership, authority and evidence become clearer.</p><form action={createDefaultPlan}><input type="hidden" name="case_id" value={id}/><input type="hidden" name="case_type" value={caseRow.case_type}/><button className="button button-primary" type="submit">Create pathway</button></form></>}
+        <span className="eyebrow">CASE PATHWAY</span><h2 style={{fontSize:20,margin:'9px 0'}}>Working plan</h2>
+        {plans.length ? <div><p>The case pathway is active. Use it as the working sequence and refine it as ownership, authority and evidence become clearer.</p>{plans.map(p=><div key={p.id} style={{borderTop:'1px solid #e5dfec',padding:'12px 0'}}><strong>{p.goal_title}</strong><small style={{display:'block',marginTop:5,color:'#625d6b'}}>Stage {p.current_stage} · {p.status}</small></div>)}</div> : <><p>No pathway was created automatically. Create one now from this matter type.</p><form action={createDefaultPlan}><input type="hidden" name="case_id" value={id}/><input type="hidden" name="case_type" value={caseRow.case_type}/><button className="button button-primary" type="submit">Create pathway</button></form></>}
       </section>
     </div>
 
