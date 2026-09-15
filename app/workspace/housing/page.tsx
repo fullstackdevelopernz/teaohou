@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ArrowRight, BadgeDollarSign, Building2, FileCheck2, FileText, Hammer, HardHat, House, Landmark, MapPinned, Plus, Route, Scale, ShieldCheck, TriangleAlert, Users, WalletCards, Waves, Wrench } from 'lucide-react';
 import { createClient } from '../../../lib/supabase/server';
-import { createDefaultPlan, createHousingProject } from '../actions';
+import { createDefaultPlan } from '../actions';
+import { createHousingProject } from './actions';
 import HousingReadiness from './HousingReadiness';
 import styles from '../tools.module.css';
 import housingStyles from './housing.module.css';
@@ -31,7 +32,7 @@ const siteChecks=[
 ];
 const financePack=['Evidence of ownership and authority to build or occupy','Site plan, concept drawings and project scope','Consent pathway and professional reports where required','Quantity-surveyor estimate, builder pricing or cost plan','Household income, contribution and affordability information','Valuation or security information where a lender requires it','Infrastructure, contingency and professional-fee allowances','Insurance and contract information before construction starts'];
 
-export default async function HousingPage({searchParams}:{searchParams:Promise<{case?:string}>}){
+export default async function HousingPage({searchParams}:{searchParams:Promise<{case?:string;created?:string;create_error?:string}>}){
   const params=await searchParams;
   const supabase=await createClient();
   const { data:claimsData }=await supabase.auth.getClaims();
@@ -64,10 +65,13 @@ export default async function HousingPage({searchParams}:{searchParams:Promise<{
   return <main className={styles.page}>
     <section className={styles.hero}><div className={styles.heroMain}><span className={styles.eyebrow}>HOUSING & DEVELOPMENT</span><h1>Turn a housing goal into a buildable whenua project</h1><p>Work through authority, site feasibility, planning, funding and build readiness in the right order. Te Ao Hou keeps the evidence, decisions and next actions attached to the same housing case.</p><div className={styles.quickActions}><Link href="/workspace/whenua">Confirm whenua</Link><Link href="/workspace/documents">Upload project evidence</Link><Link href="/workspace/applications">Open applications</Link></div></div><aside className={styles.heroAside}><div className={styles.metric}><span>Housing projects</span><strong>{cases.length}</strong></div><div className={styles.metric}><span>Current readiness</span><strong>{readiness}%</strong></div><div className={styles.metric}><span>Linked whenua</span><strong>{whenua.length}</strong></div><div className={styles.heroNote}><ShieldCheck size={15}/><span>Project progress is now stored against the authenticated Te Ao Hou case record.</span></div></aside></section>
 
+    {params.created==='1'&&<div className={styles.notice} style={{marginTop:18}}><ShieldCheck size={16}/><span>Housing project created. Your case record and six-stage housing pathway are ready.</span></div>}
+    {params.create_error&&<div className={styles.notice} style={{marginTop:18}}><TriangleAlert size={16}/><span>{params.create_error==='missing_title'?'Enter a project name before creating the housing case.':'The housing case could not be created. Please try again; the failure has been logged for review.'}</span></div>}
+
     <div className={styles.toolbar}><div><h2>My housing projects</h2><p>Select the project you’re working on, or start a new housing case.</p></div></div>
     <section className={housingStyles.projectWorkspace}>
       <div className={housingStyles.projectTabs}>{cases.map(item=><Link key={item.id} href={`/workspace/housing?case=${item.id}`} className={`${housingStyles.projectTab} ${selectedCase?.id===item.id?housingStyles.projectTabActive:''}`}><strong>{item.title}</strong><small>{String(item.status).replaceAll('_',' ')}</small></Link>)}</div>
-      <form action={createHousingProject} className={housingStyles.projectCreate}><div><span className={styles.eyebrowDark}>NEW PROJECT</span><h3>Start a housing case</h3></div><input name="title" required maxLength={180} placeholder="e.g. Build our whānau home on Te Puke block"/><textarea name="summary" maxLength={1000} placeholder="What are you trying to achieve, who is the home for, and what do you already know?"/><button className={styles.primary} type="submit"><Plus size={14}/> Create housing project</button></form>
+      <form action={createHousingProject} className={housingStyles.projectCreate}><div><span className={styles.eyebrowDark}>NEW PROJECT</span><h3>Start a housing case</h3></div><input name="title" required maxLength={120} placeholder="e.g. Build our whānau home on Te Puke block"/><textarea name="summary" maxLength={3000} placeholder="What are you trying to achieve, who is the home for, and what do you already know?"/><button className={styles.primary} type="submit"><Plus size={14}/> Create housing project</button></form>
     </section>
 
     {selectedCase&&<section className={housingStyles.activeProject}><div><span className={styles.eyebrowDark}>ACTIVE HOUSING CASE</span><h2>{selectedCase.title}</h2><p>{selectedCase.summary||'Add the project purpose and whānau outcome as the case develops.'}</p></div><Link href={`/workspace/cases/${selectedCase.id}`} className={styles.actionLink}>Open full case record <ArrowRight size={13}/></Link></section>}
