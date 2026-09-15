@@ -1,0 +1,66 @@
+/* Admin readability baseline. Loaded after module styles so small fixed pixel text cannot regress. */
+main[class*="loginShell"],
+[class*="admin_"]{font-size:1rem;line-height:1.6}
+
+main[class*="loginShell"] p,
+main[class*="content"] p{font-size:.9375rem!important;line-height:1.6!important}
+
+main[class*="loginShell"] label,
+main[class*="content"] label{font-size:.875rem!important;line-height:1.45!important}
+
+main[class*="loginShell"] input,
+main[class*="loginShell"] select,
+main[class*="loginShell"] textarea,
+main[class*="loginShell"] button,
+main[class*="content"] input,
+main[class*="content"] select,
+main[class*="content"] textarea,
+main[class*="content"] button{font-size:1rem!important;line-height:1.4!important;min-height:44px}
+
+main[class*="loginShell"] a[style*="font-size"],
+main[class*="loginShell"] span[style*="font-size"],
+main[class*="content"] a[style*="font-size"],
+main[class*="content"] span[style*="font-size"]{font-size:.8125rem!important;line-height:1.45!important}
+
+[class*="loginBrand"] p{font-size:1rem!important;line-height:1.6!important}
+[class*="loginBrand"] small{font-size:.8125rem!important}
+[class*="loginPanel"] p{font-size:.9375rem!important}
+[class*="loginPanel"] label{font-size:.875rem!important}
+[class*="loginPanel"] button{font-size:1rem!important;min-height:46px}
+[class*="error"]{font-size:.875rem!important;line-height:1.55!important}
+
+[class*="admin_"][class*="sidebar"] [class*="brand"] strong{font-size:1rem!important}
+[class*="admin_"][class*="sidebar"] [class*="brand"] small{font-size:.75rem!important}
+[class*="admin_"][class*="sidebar"] nav a,
+[class*="nav"] a{font-size:.875rem!important;line-height:1.45!important;min-height:44px}
+[class*="navLabel"]{font-size:.75rem!important;line-height:1.4!important}
+[class*="sideBottom"],
+[class*="sideBottom"] button{font-size:.8125rem!important;line-height:1.55!important}
+
+[class*="topbar"] strong{font-size:.9375rem!important}
+[class*="topbar"] span{font-size:.875rem!important}
+[class*="hero"]>span{font-size:.75rem!important;line-height:1.4!important}
+[class*="hero"]>p{font-size:1rem!important;line-height:1.6!important}
+[class*="stat"] span{font-size:.75rem!important;line-height:1.4!important}
+[class*="panel"] h2{font-size:1.125rem!important;line-height:1.3!important}
+[class*="case"] strong{font-size:.9375rem!important;line-height:1.4!important}
+[class*="case"] p{font-size:.875rem!important;line-height:1.55!important}
+[class*="status"]{font-size:.75rem!important;line-height:1.3!important}
+[class*="actions"] button,
+[class*="actions"] select,
+[class*="formPanel"] input,
+[class*="formPanel"] select,
+[class*="formPanel"] textarea,
+[class*="formPanel"] button{font-size:.9375rem!important;line-height:1.4!important;min-height:44px}
+[class*="task"] strong{font-size:.9375rem!important}
+[class*="task"] p{font-size:.875rem!important;line-height:1.5!important}
+[class*="mobileNav"] a{font-size:.875rem!important;min-height:44px;display:inline-flex;align-items:center}
+
+@media(max-width:560px){
+  main[class*="loginShell"] input,
+  main[class*="loginShell"] select,
+  main[class*="loginShell"] textarea,
+  main[class*="content"] input,
+  main[class*="content"] select,
+  main[class*="content"] textarea{font-size:1rem!important}
+}
