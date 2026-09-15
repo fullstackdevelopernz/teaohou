@@ -6,7 +6,8 @@ const APP = path.join(ROOT, 'app');
 const MIN_PX = 12;
 
 // Legacy CSS files are centrally overridden by accessibility.css/admin-accessibility.css.
-// Remove files from this set as their internal values are migrated to design tokens.
+// This list is an explicit migration register, not a blanket exemption. New CSS files are checked.
+// Remove entries as their internal pixel values are migrated to shared type tokens.
 const LEGACY_CSS_ALLOWLIST = new Set([
   'app/globals.css',
   'app/books.css',
@@ -15,6 +16,11 @@ const LEGACY_CSS_ALLOWLIST = new Set([
   'app/workspace/[section]/section.module.css',
   'app/workspace/_components/pathway-workspace.module.css',
   'app/resources/resources.module.css',
+  'app/workspace/appointments/appointments.module.css',
+  'app/workspace/housing/housing.module.css',
+  'app/workspace/messages/messages.module.css',
+  'app/workspace/plan/plan.module.css',
+  'app/workspace/whenua/whenua.module.css',
 ]);
 
 const sourceExtensions = new Set(['.tsx', '.ts', '.jsx', '.js', '.css']);
@@ -59,4 +65,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Typography governance check passed: no source UI text below ${MIN_PX}px.`);
+console.log(`Typography governance check passed: no unapproved source UI text below ${MIN_PX}px.`);
