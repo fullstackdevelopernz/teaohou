@@ -1,0 +1,113 @@
+:root{
+  --text-body:1rem;
+  --text-support:.9375rem;
+  --text-secondary:.875rem;
+  --text-meta:.8125rem;
+  --text-label:.75rem;
+  --line-body:1.6;
+  --line-support:1.55;
+}
+
+html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{font-size:var(--text-body);line-height:var(--line-body)}
+
+/* Public site readability baseline */
+.site-nav,.header-action{font-size:var(--text-secondary)!important}
+.brand small,.hero-trust,.art-caption small,.art-tag,.intro-strip span,.intro-strip strong,.pathway-top,.card-link,.text-link,.footer>small{font-size:var(--text-meta)!important}
+.hero-copy>p,.section-heading>p,.story-copy p,.books-heading p{font-size:var(--text-body)!important;line-height:var(--line-body)!important}
+.pathway-card p,.statement p,.footer p,.book-subtitle,.books-footer p,.books-footer a{font-size:var(--text-support)!important;line-height:var(--line-support)!important}
+.button,.book-buy{font-size:var(--text-secondary)!important;min-height:44px}
+.eyebrow,.story-art span,.book-number,.book-author{font-size:var(--text-label)!important;line-height:1.45!important}
+
+/* Workspace global baseline */
+.workspace-main{font-size:var(--text-body)}
+.workspace-main .workspace-header span{font-size:var(--text-secondary)!important}
+.sidebar nav a{font-size:var(--text-secondary)!important;line-height:1.45}
+.sidebar-label{font-size:var(--text-label)!important}
+.sidebar-bottom{font-size:var(--text-secondary)!important;line-height:1.6!important}
+.sidebar-bottom small,.sidebar-bottom a,.sidebar-bottom button{font-size:var(--text-meta)!important;line-height:1.5!important}
+.mobile-menu a{font-size:var(--text-secondary)!important;min-height:44px;display:inline-flex;align-items:center}
+
+.workspace-content,.workspace-main main{font-size:var(--text-body)}
+.workspace-content p,.workspace-main main p{font-size:var(--text-body)!important;line-height:var(--line-body)!important}
+.workspace-content small,.workspace-main main small{font-size:var(--text-secondary)!important;line-height:var(--line-support)!important}
+.workspace-content label,.workspace-main main label{font-size:var(--text-secondary)!important;line-height:1.45!important}
+.workspace-content input,.workspace-content select,.workspace-content textarea,
+.workspace-main main input,.workspace-main main select,.workspace-main main textarea{font-size:1rem!important;line-height:1.45!important;min-height:44px}
+.workspace-content button,.workspace-main main button{font-size:var(--text-secondary)!important;line-height:1.35!important;min-height:44px}
+.workspace-content a,.workspace-main main a{font-size:var(--text-secondary);line-height:1.45}
+.workspace-lead{font-size:var(--text-body)!important;line-height:var(--line-body)!important}
+.panel p,.notice,.empty-state{font-size:var(--text-support)!important;line-height:var(--line-body)!important}
+.panel-link,.section-list strong,.section-list small,.resource-link{font-size:var(--text-secondary)!important;line-height:1.5!important}
+
+/* CSS-module workspace components: minimum readable sizes */
+.workspace-main main [class*="eyebrow"]{font-size:var(--text-label)!important;line-height:1.45!important}
+.workspace-main main [class*="toolbar"] p,
+.workspace-main main [class*="panelIntro"],
+.workspace-main main [class*="record"] p,
+.workspace-main main [class*="heroNote"],
+.workspace-main main [class*="pathwayCard"] p,
+.workspace-main main [class*="readinessTop"] p,
+.workspace-main main [class*="siteCard"] p,
+.workspace-main main [class*="financeLead"] p,
+.workspace-main main [class*="goNoGoMain"] p{font-size:var(--text-support)!important;line-height:var(--line-body)!important}
+
+.workspace-main main [class*="metric"] span,
+.workspace-main main [class*="pipeCard"] span,
+.workspace-main main [class*="gateCopy"] small,
+.workspace-main main [class*="nextActionCard"] small,
+.workspace-main main [class*="projectTab"] small{font-size:var(--text-secondary)!important;line-height:1.5!important}
+
+.workspace-main main [class*="status"],
+.workspace-main main [class*="listHeader"],
+.workspace-main main [class*="docMeta"],
+.workspace-main main [class*="dateBox"] span,
+.workspace-main main [class*="threadMeta"] small,
+.workspace-main main [class*="gateNumber"],
+.workspace-main main [class*="gateCopy"] em,
+.workspace-main main [class*="progressRing"] span{font-size:var(--text-label)!important;line-height:1.4!important}
+
+.workspace-main main [class*="primary"],
+.workspace-main main [class*="quickActions"] a,
+.workspace-main main [class*="actionLink"],
+.workspace-main main [class*="resetButton"],
+.workspace-main main [class*="goNoGoChecks"] span,
+.workspace-main main [class*="nextActionCard"] strong,
+.workspace-main main [class*="projectTab"] strong{font-size:var(--text-secondary)!important;line-height:1.4!important}
+
+.workspace-main main [class*="record"] strong,
+.workspace-main main [class*="gateCopy"] strong,
+.workspace-main main [class*="siteCard"] h3,
+.workspace-main main [class*="pathwayCard"] h3,
+.workspace-main main [class*="financeLead"] h3,
+.workspace-main main [class*="goNoGoMain"] h3{font-size:var(--text-body)!important;line-height:1.35!important}
+
+.workspace-main main [class*="financeChecklist"]>div{font-size:var(--text-secondary)!important;line-height:1.5!important}
+.workspace-main main [class*="heroMain"] p{font-size:var(--text-body)!important;line-height:1.65!important}
+.workspace-main main [class*="heroMain"] h1{font-size:clamp(2rem,3vw,2.75rem)!important;line-height:1.1!important}
+.workspace-main main [class*="toolbar"] h2,
+.workspace-main main [class*="readinessTop"] h2,
+.workspace-main main [class*="activeProject"] h2{font-size:clamp(1.35rem,2vw,1.65rem)!important;line-height:1.2!important}
+
+/* Touch and reflow standards */
+@media(max-width:900px){
+  .workspace-main main [class*="heroMain"] h1{font-size:clamp(1.9rem,7vw,2.4rem)!important}
+  .workspace-content,.workspace-main main{font-size:1rem}
+}
+
+@media(max-width:760px){
+  .workspace-header span{font-size:var(--text-secondary)!important}
+  .mobile-menu a{font-size:var(--text-secondary)!important}
+  .workspace-title{font-size:clamp(1.8rem,8vw,2.2rem)!important}
+  .workspace-lead{font-size:1rem!important}
+  .notice{font-size:var(--text-support)!important}
+  .create-case-heading p{font-size:var(--text-support)!important}
+}
+
+@media(max-width:480px){
+  .site-header,.workspace-header{padding-left:16px!important;padding-right:16px!important}
+  .section,.books-section{padding-left:18px!important;padding-right:18px!important}
+}
+
+/* Respect user zoom and text-spacing overrides */
+p,li,dd,dt,small,label,a,button,input,select,textarea{overflow-wrap:anywhere}
