@@ -21,6 +21,7 @@ const links=[
 
 const responsiveWorkspaceCss = `
 .workspace,.workspace-main,.workspace-content,.panel,.notice{min-width:0}
+.sidebar .brand small{font-size:12px!important;letter-spacing:.11em!important;line-height:1.35!important;white-space:nowrap}
 .create-case-heading{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}
 .create-case-heading h2{margin:8px 0 5px;font-size:21px}
 .create-case-heading p{margin:0;color:#625d6b;font-size:15px;line-height:1.65}
