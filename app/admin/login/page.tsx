@@ -38,8 +38,8 @@ export default function AdminLoginPage(){
   return <main className={styles.loginShell}>
     <section className={styles.loginBrand}><div><img src="/te-ao-hou-symbol.svg" alt="Te Ao Hou"/><h1>Te Ao Hou Administration</h1><p>A separate operational environment for case intake, assignment, tasks, applications, evidence, appointments and whānau communications.</p></div><small>Staff access only · Te Ao Hou</small></section>
     <section className={styles.loginPanel}>
-      <Link href="/" style={{fontSize:10,fontWeight:800,color:'#4a236f'}}>← Back to Te Ao Hou</Link>
-      <span style={{fontSize:9,fontWeight:800,letterSpacing:'.14em',color:'#7851a9',marginTop:28}}>ADMIN ACCESS</span>
+      <Link href="/" style={{fontSize:14,fontWeight:800,color:'#4a236f'}}>← Back to Te Ao Hou</Link>
+      <span style={{fontSize:12,fontWeight:800,letterSpacing:'.14em',color:'#7851a9',marginTop:28}}>ADMIN ACCESS</span>
       <h2>Staff sign in</h2>
       <p>Use your own authorised Te Ao Hou administration account. Login details are never stored in this page.</p>
       <form onSubmit={submit} className={styles.form} autoComplete="off">
