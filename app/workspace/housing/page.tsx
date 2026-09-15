@@ -5,6 +5,7 @@ import { createClient } from '../../../lib/supabase/server';
 import { createDefaultPlan, createHousingProject } from '../actions';
 import HousingReadiness from './HousingReadiness';
 import styles from '../tools.module.css';
+import housingStyles from './housing.module.css';
 
 export const dynamic='force-dynamic';
 
@@ -64,12 +65,12 @@ export default async function HousingPage({searchParams}:{searchParams:Promise<{
     <section className={styles.hero}><div className={styles.heroMain}><span className={styles.eyebrow}>HOUSING & DEVELOPMENT</span><h1>Turn a housing goal into a buildable whenua project</h1><p>Work through authority, site feasibility, planning, funding and build readiness in the right order. Te Ao Hou keeps the evidence, decisions and next actions attached to the same housing case.</p><div className={styles.quickActions}><Link href="/workspace/whenua">Confirm whenua</Link><Link href="/workspace/documents">Upload project evidence</Link><Link href="/workspace/applications">Open applications</Link></div></div><aside className={styles.heroAside}><div className={styles.metric}><span>Housing projects</span><strong>{cases.length}</strong></div><div className={styles.metric}><span>Current readiness</span><strong>{readiness}%</strong></div><div className={styles.metric}><span>Linked whenua</span><strong>{whenua.length}</strong></div><div className={styles.heroNote}><ShieldCheck size={15}/><span>Project progress is now stored against the authenticated Te Ao Hou case record.</span></div></aside></section>
 
     <div className={styles.toolbar}><div><h2>My housing projects</h2><p>Select the project you’re working on, or start a new housing case.</p></div></div>
-    <section className={styles.projectWorkspace}>
-      <div className={styles.projectTabs}>{cases.map(item=><Link key={item.id} href={`/workspace/housing?case=${item.id}`} className={`${styles.projectTab} ${selectedCase?.id===item.id?styles.projectTabActive:''}`}><strong>{item.title}</strong><small>{String(item.status).replaceAll('_',' ')}</small></Link>)}</div>
-      <form action={createHousingProject} className={styles.projectCreate}><div><span className={styles.eyebrowDark}>NEW PROJECT</span><h3>Start a housing case</h3></div><input name="title" required maxLength={180} placeholder="e.g. Build our whānau home on Te Puke block"/><textarea name="summary" maxLength={1000} placeholder="What are you trying to achieve, who is the home for, and what do you already know?"/><button className={styles.primary} type="submit"><Plus size={14}/> Create housing project</button></form>
+    <section className={housingStyles.projectWorkspace}>
+      <div className={housingStyles.projectTabs}>{cases.map(item=><Link key={item.id} href={`/workspace/housing?case=${item.id}`} className={`${housingStyles.projectTab} ${selectedCase?.id===item.id?housingStyles.projectTabActive:''}`}><strong>{item.title}</strong><small>{String(item.status).replaceAll('_',' ')}</small></Link>)}</div>
+      <form action={createHousingProject} className={housingStyles.projectCreate}><div><span className={styles.eyebrowDark}>NEW PROJECT</span><h3>Start a housing case</h3></div><input name="title" required maxLength={180} placeholder="e.g. Build our whānau home on Te Puke block"/><textarea name="summary" maxLength={1000} placeholder="What are you trying to achieve, who is the home for, and what do you already know?"/><button className={styles.primary} type="submit"><Plus size={14}/> Create housing project</button></form>
     </section>
 
-    {selectedCase&&<section className={styles.activeProject}><div><span className={styles.eyebrowDark}>ACTIVE HOUSING CASE</span><h2>{selectedCase.title}</h2><p>{selectedCase.summary||'Add the project purpose and whānau outcome as the case develops.'}</p></div><Link href={`/workspace/cases/${selectedCase.id}`} className={styles.actionLink}>Open full case record <ArrowRight size={13}/></Link></section>}
+    {selectedCase&&<section className={housingStyles.activeProject}><div><span className={styles.eyebrowDark}>ACTIVE HOUSING CASE</span><h2>{selectedCase.title}</h2><p>{selectedCase.summary||'Add the project purpose and whānau outcome as the case develops.'}</p></div><Link href={`/workspace/cases/${selectedCase.id}`} className={styles.actionLink}>Open full case record <ArrowRight size={13}/></Link></section>}
 
     <div className={styles.toolbar}><div><h2>What kind of housing project is this?</h2><p>Start with the real whānau outcome. The evidence and professional work needed will vary by project.</p></div></div>
     <div className={styles.pathwayGrid}>{pathways.map(({icon:Icon,title,text})=><article className={styles.pathwayCard} key={title}><span><Icon size={19}/></span><h3>{title}</h3><p>{text}</p></article>)}</div>
