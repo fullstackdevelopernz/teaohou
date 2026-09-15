@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, FileText, FolderOpen, CalendarDays, MessageSquare, ListChecks } from 'lucide-react';
+import { ArrowLeft, FileText, FolderOpen, MessageSquare, ListChecks } from 'lucide-react';
 import { createClient } from '../../../../../lib/supabase/server';
 import styles from '../../../admin.module.css';
 
@@ -17,7 +17,7 @@ export default async function AdminCasePage({params}:{params:Promise<{id:string}
   ]);
   if(!caseRow) notFound();
   return <main className={styles.content}>
-    <Link href="/admin" style={{fontSize:10,fontWeight:800,color:'#4a236f',display:'inline-flex',gap:6,alignItems:'center',marginBottom:14}}><ArrowLeft size={13}/>Back to case queue</Link>
+    <Link href="/admin" style={{fontSize:14,fontWeight:800,color:'#4a236f',display:'inline-flex',gap:6,alignItems:'center',marginBottom:14}}><ArrowLeft size={15}/>Back to case queue</Link>
     <section className={styles.hero}><span>{caseRow.reference_code}</span><h1>{caseRow.title}</h1><p>{String(caseRow.case_type||'case').replaceAll('_',' ')} · {String(caseRow.status||'').replaceAll('_',' ')} · {String(caseRow.priority||'normal')} priority</p></section>
     <div className={styles.stats}><div className={styles.stat}><ListChecks size={18}/><b>{tasks?.length||0}</b><span>Tasks</span></div><div className={styles.stat}><FileText size={18}/><b>{apps?.length||0}</b><span>Applications</span></div><div className={styles.stat}><FolderOpen size={18}/><b>{docs?.length||0}</b><span>Documents</span></div><div className={styles.stat}><MessageSquare size={18}/><b>{messages?.length||0}</b><span>Recent messages</span></div></div>
     <div className={styles.grid}><section className={styles.panel}><h2>Case work</h2><div className={styles.queue}>{(tasks||[]).map(t=><div key={t.id} className={styles.case}><div className={styles.caseTop}><strong>{t.title}</strong><span className={styles.status}>{String(t.status).replaceAll('_',' ')}</span></div>{t.due_date&&<p>Due {new Date(`${t.due_date}T00:00:00`).toLocaleDateString('en-NZ')}</p>}</div>)}{!tasks?.length&&<p>No tasks yet.</p>}</div><h2 style={{marginTop:24}}>Applications</h2><div className={styles.queue}>{(apps||[]).map(a=><div key={a.id} className={styles.case}><div className={styles.caseTop}><strong>{a.application_type}</strong><span className={styles.status}>{String(a.status).replaceAll('_',' ')}</span></div>{a.court_reference&&<p>Court reference: {a.court_reference}</p>}{a.hearing_at&&<p>Hearing: {new Date(a.hearing_at).toLocaleString('en-NZ')}</p>}</div>)}{!apps?.length&&<p>No applications yet.</p>}</div></section>
