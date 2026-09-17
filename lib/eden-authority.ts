@@ -9,6 +9,7 @@ function mode(): AuthorityMode {
 }
 
 export async function checkEdenAuthority(input: {
+  subjectId: string;
   actorId: string;
   resourceId: string;
   domain: string;
@@ -37,6 +38,7 @@ export async function checkEdenAuthority(input: {
     headers: { 'content-type': 'application/json', authorization: `Bearer ${apiKey}` },
     body: JSON.stringify({
       requestId,
+      subjectId: input.subjectId,
       actor: { id: input.actorId, type: 'person', relationships: [] },
       resource: {
         id: input.resourceId,
