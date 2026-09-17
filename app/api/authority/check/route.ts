@@ -14,11 +14,8 @@ export async function POST(request: Request) {
     resourceId?: string;
     domain?: string;
     classifications?: string[];
-    authorityHolderIds?: string[];
     action?: 'read' | 'write' | 'share' | 'infer' | 'train' | 'export' | 'execute';
     purpose?: string;
-    processorId?: string;
-    jurisdiction?: string;
     retention?: 'none' | 'ephemeral' | 'persistent';
     authorityId?: string;
   };
@@ -26,26 +23,34 @@ export async function POST(request: Request) {
   try { body = await request.json(); }
   catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
 
-  if (!body.subjectId || !body.resourceId || !body.domain || !body.action || !body.purpose || !body.authorityId || !body.authorityHolderIds?.length) {
+  if (!body.subjectId || !body.resourceId || !body.domain || !body.action || !body.purpose || !body.authorityId) {
     return NextResponse.json({ error: 'missing_authority_request_fields' }, { status: 400 });
+  }
+
+  // This generic endpoint is deliberately personal-subject only. Collective,
+  // trust, whānau and whenua authority must be derived by a server-side domain
+  // workflow rather than asserted by a browser caller.
+  if (body.subjectId !== userId) {
+    return NextResponse.json({ error: 'subject_mismatch' }, { status: 403 });
   }
 
   try {
     const result = await checkEdenAuthority({
-      subjectId: body.subjectId,
+      subjectId: userId,
       actorId: userId,
       resourceId: body.resourceId,
       domain: body.domain,
       classifications: body.classifications?.length ? body.classifications : ['restricted'],
-      authorityHolderIds: body.authorityHolderIds,
+      authorityHolderIds: [userId],
       action: body.action,
       purpose: body.purpose,
-      processorId: body.processorId ?? 'teaohou',
-      jurisdiction: body.jurisdiction ?? 'NZ',
+      processorId: 'teaohou',
+      jurisdiction: 'NZ',
       retention: body.retention ?? 'persistent',
       authorityId: body.authorityId,
     });
 
+    // Shadow mode is observe-only; checkEdenAuthority always returns ALLOW in shadow.
     return NextResponse.json(result, { status: result.decision === 'DENY' ? 403 : 200 });
   } catch (authorityError) {
     const message = authorityError instanceof Error ? authorityError.message : 'authority_check_failed';
