@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { checkEdenAuthority } from '@/lib/eden-authority';
+import { AuthorityCheckError, checkEdenAuthority } from '@/lib/eden-authority';
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -51,9 +51,11 @@ export async function POST(request: Request) {
     });
 
     // Shadow mode is observe-only; checkEdenAuthority always returns ALLOW in shadow.
-    return NextResponse.json(result, { status: result.decision === 'DENY' ? 403 : 200 });
+    return NextResponse.json(result, { status: 200 });
   } catch (authorityError) {
+    const status = authorityError instanceof AuthorityCheckError ? authorityError.status : 503;
+    const code = authorityError instanceof AuthorityCheckError ? authorityError.code : 'AUTHORITY_CHECK_FAILED';
     const message = authorityError instanceof Error ? authorityError.message : 'authority_check_failed';
-    return NextResponse.json({ error: 'authority_check_failed', decision: 'DENY', reason: message }, { status: 403 });
+    return NextResponse.json({ error: code, decision: 'DENY', reason: message }, { status });
   }
 }
