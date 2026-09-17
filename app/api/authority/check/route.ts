@@ -10,6 +10,7 @@ export async function POST(request: Request) {
   if (error || !userId) return NextResponse.json({ error: 'unauthorised' }, { status: 401 });
 
   let body: {
+    subjectId?: string;
     resourceId?: string;
     domain?: string;
     classifications?: string[];
@@ -25,12 +26,13 @@ export async function POST(request: Request) {
   try { body = await request.json(); }
   catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
 
-  if (!body.resourceId || !body.domain || !body.action || !body.purpose || !body.authorityId || !body.authorityHolderIds?.length) {
+  if (!body.subjectId || !body.resourceId || !body.domain || !body.action || !body.purpose || !body.authorityId || !body.authorityHolderIds?.length) {
     return NextResponse.json({ error: 'missing_authority_request_fields' }, { status: 400 });
   }
 
   try {
     const result = await checkEdenAuthority({
+      subjectId: body.subjectId,
       actorId: userId,
       resourceId: body.resourceId,
       domain: body.domain,
