@@ -1,11 +1,16 @@
 export type AuthorityMode = 'off' | 'shadow' | 'enforce';
 type Decision = 'ALLOW' | 'DENY' | 'ALLOW_WITH_CONDITIONS';
-type DecisionResponse = { decision: Decision; reasons?: string[]; conditions?: string[]; decisionId?: string; requestId?: string; authorityVersion?: number };
+type DecisionResponse = { decision: Decision; reasons?: string[]; conditions?: string[]; decisionId?: string; requestId?: string; authorityVersion?: number; observedDecision?: string; observedReasons?: string[] };
+const VALID_DECISIONS = new Set<Decision>(['ALLOW', 'DENY', 'ALLOW_WITH_CONDITIONS']);
 
 function mode(): AuthorityMode {
   const value = process.env.EDEN_AUTHORITY_MODE;
   if (value === 'shadow' || value === 'enforce') return value;
   return 'off';
+}
+
+function shadowAllow(reason: string, observedDecision?: string, observedReasons?: string[]): DecisionResponse {
+  return { decision: 'ALLOW', reasons: [reason], observedDecision, observedReasons };
 }
 
 export async function checkEdenAuthority(input: {
@@ -29,7 +34,7 @@ export async function checkEdenAuthority(input: {
   const apiKey = process.env.EDEN_AUTHORITY_API_KEY;
   if (!baseUrl || !apiKey) {
     if (currentMode === 'enforce') throw new Error('Authority enforcement is enabled but the authority service is not configured.');
-    return { decision: 'ALLOW', reasons: ['shadow_configuration_missing'] };
+    return shadowAllow('shadow_configuration_missing', 'DENY');
   }
 
   const requestId = crypto.randomUUID();
@@ -62,23 +67,41 @@ export async function checkEdenAuthority(input: {
   } catch (error) {
     if (currentMode === 'shadow') {
       console.warn('Eden authority shadow request failed', { requestId, error });
-      return { decision: 'DENY', reasons: ['authority_service_unreachable'] };
+      return shadowAllow('shadow_authority_service_unreachable', 'DENY');
     }
     throw new Error('Authority service could not be reached in time.');
   }
 
-  let result: DecisionResponse;
-  try { result = (await response.json()) as DecisionResponse; }
-  catch { result = { decision: 'DENY', reasons: ['invalid_authority_service_response'] }; }
+  let raw: unknown;
+  try { raw = await response.json(); }
+  catch { raw = null; }
+  const result = (raw && typeof raw === 'object' ? raw : {}) as Partial<DecisionResponse>;
+  const validDecision = typeof result.decision === 'string' && VALID_DECISIONS.has(result.decision as Decision);
 
-  if (!response.ok || result.decision === 'DENY') {
-    if (currentMode === 'shadow') {
-      console.warn('Eden authority shadow denial', { requestId, status: response.status, result });
-      return result;
-    }
-    throw new Error(`Authority denied protected operation (${result.reasons?.join(', ') || response.status}).`);
+  if (currentMode === 'shadow') {
+    console.info('Eden authority shadow observation', { requestId, status: response.status, result });
+    return shadowAllow(
+      response.ok && validDecision ? 'shadow_observed_authority_decision' : 'shadow_invalid_authority_response',
+      validDecision ? result.decision : 'INVALID',
+      result.reasons,
+    );
   }
 
-  if (currentMode === 'shadow') console.info('Eden authority shadow decision', { requestId, result });
-  return result;
+  if (!response.ok) {
+    throw new Error(`Authority service rejected protected operation (${response.status}).`);
+  }
+  if (!validDecision) {
+    throw new Error('Authority service returned an invalid decision.');
+  }
+  if (result.decision === 'DENY') {
+    throw new Error(`Authority denied protected operation (${result.reasons?.join(', ') || 'policy_denied'}).`);
+  }
+  if (result.decision === 'ALLOW_WITH_CONDITIONS') {
+    if (!Array.isArray(result.conditions) || !result.conditions.length) {
+      throw new Error('Authority service returned conditioned approval without conditions.');
+    }
+    throw new Error(`Authority requires conditions before this operation can proceed (${result.conditions.join(', ')}).`);
+  }
+
+  return result as DecisionResponse;
 }
