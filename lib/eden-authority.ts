@@ -3,6 +3,17 @@ type Decision = 'ALLOW' | 'DENY' | 'ALLOW_WITH_CONDITIONS';
 type DecisionResponse = { decision: Decision; reasons?: string[]; conditions?: string[]; decisionId?: string; requestId?: string; authorityVersion?: number; observedDecision?: string; observedReasons?: string[] };
 const VALID_DECISIONS = new Set<Decision>(['ALLOW', 'DENY', 'ALLOW_WITH_CONDITIONS']);
 
+export class AuthorityCheckError extends Error {
+  status: number;
+  code: string;
+  constructor(message: string, status: number, code: string) {
+    super(message);
+    this.name = 'AuthorityCheckError';
+    this.status = status;
+    this.code = code;
+  }
+}
+
 function mode(): AuthorityMode {
   const value = process.env.EDEN_AUTHORITY_MODE;
   if (value === 'shadow' || value === 'enforce') return value;
@@ -33,7 +44,7 @@ export async function checkEdenAuthority(input: {
   const baseUrl = process.env.EDEN_AUTHORITY_URL;
   const apiKey = process.env.EDEN_AUTHORITY_API_KEY;
   if (!baseUrl || !apiKey) {
-    if (currentMode === 'enforce') throw new Error('Authority enforcement is enabled but the authority service is not configured.');
+    if (currentMode === 'enforce') throw new AuthorityCheckError('Authority enforcement is enabled but the authority service is not configured.', 503, 'AUTHORITY_SERVICE_UNAVAILABLE');
     return shadowAllow('shadow_configuration_missing', 'DENY');
   }
 
@@ -69,7 +80,7 @@ export async function checkEdenAuthority(input: {
       console.warn('Eden authority shadow request failed', { requestId, error });
       return shadowAllow('shadow_authority_service_unreachable', 'DENY');
     }
-    throw new Error('Authority service could not be reached in time.');
+    throw new AuthorityCheckError('Authority service could not be reached in time.', 503, 'AUTHORITY_SERVICE_UNREACHABLE');
   }
 
   let raw: unknown;
@@ -88,19 +99,20 @@ export async function checkEdenAuthority(input: {
   }
 
   if (!response.ok) {
-    throw new Error(`Authority service rejected protected operation (${response.status}).`);
+    const status = response.status === 403 ? 403 : 503;
+    throw new AuthorityCheckError(`Authority service rejected protected operation (${response.status}).`, status, status === 403 ? 'AUTHORITY_DENIED' : 'AUTHORITY_SERVICE_INVALID_RESPONSE');
   }
   if (!validDecision) {
-    throw new Error('Authority service returned an invalid decision.');
+    throw new AuthorityCheckError('Authority service returned an invalid decision.', 503, 'AUTHORITY_SERVICE_INVALID_RESPONSE');
   }
   if (result.decision === 'DENY') {
-    throw new Error(`Authority denied protected operation (${result.reasons?.join(', ') || 'policy_denied'}).`);
+    throw new AuthorityCheckError(`Authority denied protected operation (${result.reasons?.join(', ') || 'policy_denied'}).`, 403, 'AUTHORITY_DENIED');
   }
   if (result.decision === 'ALLOW_WITH_CONDITIONS') {
     if (!Array.isArray(result.conditions) || !result.conditions.length) {
-      throw new Error('Authority service returned conditioned approval without conditions.');
+      throw new AuthorityCheckError('Authority service returned conditioned approval without conditions.', 503, 'AUTHORITY_SERVICE_INVALID_RESPONSE');
     }
-    throw new Error(`Authority requires conditions before this operation can proceed (${result.conditions.join(', ')}).`);
+    throw new AuthorityCheckError(`Authority requires conditions before this operation can proceed (${result.conditions.join(', ')}).`, 409, 'AUTHORITY_CONDITIONS_REQUIRED');
   }
 
   return result as DecisionResponse;
