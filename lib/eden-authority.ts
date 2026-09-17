@@ -33,30 +33,39 @@ export async function checkEdenAuthority(input: {
   }
 
   const requestId = crypto.randomUUID();
-  const response = await fetch(`${baseUrl.replace(/\/$/, '')}/api/v1/decisions`, {
-    method: 'POST', cache: 'no-store',
-    headers: { 'content-type': 'application/json', authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({
-      requestId,
-      subjectId: input.subjectId,
-      actor: { id: input.actorId, type: 'person', relationships: [] },
-      resource: {
-        id: input.resourceId,
-        domain: input.domain,
-        classifications: input.classifications,
-        authorityHolderIds: input.authorityHolderIds,
-      },
-      action: input.action,
-      purpose: input.purpose,
-      processor: {
-        id: input.processorId ?? 'teaohou',
-        type: 'application',
-        jurisdiction: input.jurisdiction ?? 'NZ',
-        retention: input.retention ?? 'persistent',
-      },
-      authorityId: input.authorityId,
-    }),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${baseUrl.replace(/\/$/, '')}/api/v1/decisions`, {
+      method: 'POST', cache: 'no-store', signal: AbortSignal.timeout(5000),
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        requestId,
+        subjectId: input.subjectId,
+        actor: { id: input.actorId, type: 'person', relationships: [] },
+        resource: {
+          id: input.resourceId,
+          domain: input.domain,
+          classifications: input.classifications,
+          authorityHolderIds: input.authorityHolderIds,
+        },
+        action: input.action,
+        purpose: input.purpose,
+        processor: {
+          id: input.processorId ?? 'teaohou',
+          type: 'application',
+          jurisdiction: input.jurisdiction ?? 'NZ',
+          retention: input.retention ?? 'persistent',
+        },
+        authorityId: input.authorityId,
+      }),
+    });
+  } catch (error) {
+    if (currentMode === 'shadow') {
+      console.warn('Eden authority shadow request failed', { requestId, error });
+      return { decision: 'DENY', reasons: ['authority_service_unreachable'] };
+    }
+    throw new Error('Authority service could not be reached in time.');
+  }
 
   let result: DecisionResponse;
   try { result = (await response.json()) as DecisionResponse; }
